@@ -5,9 +5,7 @@ class MouseUtils:
     def __init__(self, ads=0.95):
         try:
             self.ads = ads
-            import os
-            root = os.path.abspath(os.path.dirname(__file__))
-            self.driver = ctypes.CDLL(f'{root}/logitech.driver.dll')
+            self.driver = ctypes.CDLL(f'./logitech.driver.dll')
             self.ok = self.driver.device_open() == 1
             if not self.ok:
                 print('初始化失败, 未安装罗技驱动')

@@ -17,7 +17,7 @@ class BigBoss:
         self.data.update(self.INIT_DATA)
 
         self.keyboard=ListenerKeybord(self.config)
-        self.see = SeeScreen(self.config)
+        self.see = SeeScreen(self.INIT_DATA)
     def run(self):
 
         pk = Process(target=self.keyboard.call, args=( ), name='Keyboard')

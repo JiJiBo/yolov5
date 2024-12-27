@@ -3,6 +3,8 @@ from PIL import ImageGrab
 import numpy as np
 import cv2
 
+from game_alone.YoloHead import YoloHead
+
 
 class SeeScreen:
     def __init__(self, config, width=100, height=100, fps=30):
@@ -11,6 +13,7 @@ class SeeScreen:
         self.fps = fps
         self.screen_center = None
         self.config = config
+        self.yolo = YoloHead(self.config["config"].model_path)
 
     def get_screen_center(self):
         """获取屏幕中心的坐标"""

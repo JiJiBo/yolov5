@@ -3,6 +3,7 @@ class NasGameConfig:
         self.isStarted = False
         self.frame = None
         self.isDes = False
+        self.model_path = "runs/train/last.pt"
 
     def start(self):
         self.isStarted = True

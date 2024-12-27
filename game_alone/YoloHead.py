@@ -20,14 +20,15 @@ class YoloHead():
         image = image.to(self.device)
         b, c, x, y = image.size()
         imgsz = (b, c, x, y)
-        print(imgsz)
         self.model.warmup(imgsz=imgsz)
 
-        pred = self.model(image, augment=False, visualize=False).unsqueeze(0)
+        pred = self.model(image, augment=False, visualize=False)
         return self.deal(pred)
 
     def deal(self, pred):
-        pass
+        print(pred)
+        result = {}
+        return result
 
 
 if __name__ == '__main__':

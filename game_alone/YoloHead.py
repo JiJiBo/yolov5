@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import torch
 
+from game_alone.NasGameConfig import NasGameConfig
 from models.common import DetectMultiBackend
 from utils.general import non_max_suppression, Profile
 from utils.torch_utils import select_device
@@ -41,6 +42,7 @@ class YoloHead:
         :param frame: 输入的单帧图像
         :return: 带有检测框的帧
         """
+        self.shape = frame.shape [:2]
         image, r, (dw, dh) = self.preprocess(frame)
         self.model.warmup(imgsz=(1, 3, self.img_size[0], self.img_size[1]))  # 预热模型
 
@@ -74,8 +76,9 @@ class YoloHead:
 
                 # 打印调试信息
                 print(f"Class: {self.names[class_id]}, Confidence: {confidence:.2f}, Coordinates: {x1, y1, x2, y2}")
-                box_center_x = (x1 + x2) // 2
-                box_center_y = (y1 + y2) // 2  # 绘制边界框
+                box_center_x = (x1 + x2) // 2 - self.shape[0] / 2
+                box_center_y = (y1 + y2) // 2 - self.shape[1] / 2
+
                 label = f"{self.names[class_id]} {confidence:.2f}"
                 color = (0, 255, 0)  # 绿色
                 cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
@@ -143,7 +146,8 @@ class YoloHead:
 
 
 if __name__ == '__main__':
-    model = YoloHead(r'C:\Users\12700\PycharmProjects\yolov5\runs\train\exp7\weights\last.pt', (640, 640))
+    config = NasGameConfig()
+    model = YoloHead(r'C:\Users\12700\PycharmProjects\yolov5\runs\train\exp7\weights\last.pt', (640, 640), config)
     frame = cv2.imread(
         r"C:\Users\12700\PycharmProjects\yolov5\mask\train\images\1133x768_20200130000023_jpg.rf.e8a099312aa174af48c5914c4986f91a.jpg")
     if frame is None:
@@ -153,6 +157,7 @@ if __name__ == '__main__':
     if not frame_with_detections["shoot"]:
         print("Error: Unable to detect the input image.")
         exit(1)
+    print(frame_with_detections["x"], frame_with_detections["y"])
     cv2.imshow('Detections', frame_with_detections["frame"])
     cv2.waitKey(0)
     cv2.destroyAllWindows()

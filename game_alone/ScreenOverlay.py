@@ -1,70 +1,48 @@
-import sys
-import cv2
-import numpy as np
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtCore import Qt
+import tkinter as tk
+
+class TransparentOverlay:
+    def __init__(self,width,height):
+        self.root = tk.Tk()
+        self.root.attributes("-fullscreen", True)  # 全屏
+        self.root.attributes("-transparentcolor", "black")  # 设置透明色
+        self.root.attributes("-topmost", True)  # 窗口置顶
+        self.root.attributes("-alpha", 0.5)  # 设置透明度
+        self.root.configure(bg="black")  # 背景透明
+
+        # 创建画布
+        self.canvas = tk.Canvas(self.root, bg="black", highlightthickness=0)
+        self.canvas.pack(fill="both", expand=True)
+
+        # 窗口宽高
+        self.screen_width = self.root.winfo_screenwidth()
+        self.screen_height = self.root.winfo_screenheight()
+
+        # 矩形参数
+        self.rect_width = width
+        self.rect_height = height
+        self.rect_x1 = (self.screen_width - self.rect_width) // 2
+        self.rect_y1 = (self.screen_height - self.rect_height) // 2
+        self.rect_x2 = self.rect_x1 + self.rect_width
+        self.rect_y2 = self.rect_y1 + self.rect_height
+
+        # 绘制矩形框
+        self.canvas.create_rectangle(
+            self.rect_x1, self.rect_y1, self.rect_x2, self.rect_y2, outline="red", width=5
+        )
 
 
-class TransparentWindow(QMainWindow):
-    def __init__(self, rect_width, rect_height):
-        super().__init__()
-        screen = app.primaryScreen().size()
-        rect_x = (screen.width() - rect_width) // 2
-        rect_y = (screen.height() - rect_height) // 2
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.showFullScreen()
+        # 点击穿透功能
+        self.root.attributes("-transparentcolor", "black")
 
-        # 窗口中间绘制矩形
-        self.rect_x = rect_x
-        self.rect_y = rect_y
-        self.rect_width = rect_width
-        self.rect_height = rect_height
+    def open_overlay(self):
+        """打开窗口"""
+        self.root.deiconify()
+        self.root.mainloop()
 
-        # 创建用于显示的 QLabel
-        self.label = QLabel(self)
-        self.label.setGeometry(0, 0, self.width(), self.height())
-
-        # 绘制图像
-        self.draw_image()
-
-    def draw_image(self):
-        # 创建一个透明背景的图片
-        img = np.zeros((self.height(), self.width(), 4), dtype=np.uint8)
-
-        # 绘制矩形线框
-        color = (255, 0, 0, 255)  # RGBA: 红色，完全不透明
-        thickness = 3  # 线框宽度
-        cv2.rectangle(img,
-                      (self.rect_x, self.rect_y),
-                      (self.rect_x + self.rect_width, self.rect_y + self.rect_height),
-                      color,
-                      thickness)
-
-        # 转换为 QImage
-        qimg = QImage(img.data, img.shape[1], img.shape[0], QImage.Format_RGBA8888)
-        pixmap = QPixmap.fromImage(qimg)
-
-        # 设置到 QLabel 显示
-        self.label.setPixmap(pixmap)
-
-    def mousePressEvent(self, event):
-        # 禁用鼠标点击事件，防止窗口失去焦点
-        pass
-
+    def close_overlay(self):
+        """关闭窗口"""
+        self.root.destroy()
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    # 窗口大小和矩形参数
-    screen = app.primaryScreen().size()
-    rect_width, rect_height = 200, 100
-    rect_x = (screen.width() - rect_width) // 2
-    rect_y = (screen.height() - rect_height) // 2
-
-    # 创建窗口
-    window = TransparentWindow(rect_width, rect_height)
-    window.show()
-
-    sys.exit(app.exec_())
+    overlay = TransparentOverlay()
+    overlay.open_overlay()

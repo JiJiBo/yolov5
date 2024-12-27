@@ -20,6 +20,45 @@ class NasGameConfig:
             "fps": fps
         })
 
+    @property
+    def isStarted(self):
+        """是否已启动"""
+        return self.shared_config["is_started"]
+
+    @property
+    def isDes(self):
+        """是否已销毁"""
+        return self.shared_config["is_destroyed"]
+
+    @property
+    def model_path(self):
+        """模型路径"""
+        return self.shared_config["model_path"]
+
+    @property
+    def isRed(self):
+        """是否为红方"""
+        return self.shared_config["is_red"]
+
+    @property
+    def ads(self):
+        """缩放比例"""
+        return self.shared_config["ads"]
+
+    @property
+    def width(self):
+        """屏幕宽度"""
+        return self.shared_config["width"]
+
+    @property
+    def height(self):
+        """屏幕高度"""
+        return self.shared_config["height"]
+
+    @property
+    def fps(self):
+        """帧率"""
+        return self.shared_config["fps"]
     def start(self):
         """启动配置"""
         if self.shared_config["is_started"]:
@@ -40,12 +79,12 @@ class NasGameConfig:
         self.shared_config["is_started"] = False
         self.shared_config["is_destroyed"] = True
 
-    def set_red(self):
+    def setRed(self):
         """设置为红方"""
         print("NasGameConfig set to red")
         self.shared_config["is_red"] = True
 
-    def set_blue(self):
+    def setBlue(self):
         """设置为蓝方"""
         print("NasGameConfig set to blue")
         self.shared_config["is_red"] = False

@@ -9,9 +9,8 @@ from game_alone.SeeScreen import SeeScreen
 class BigBoss:
     def __init__(self):
         manager = multiprocessing.Manager()
-        self.  shared_namespace = manager.Namespace()
+        self.shared_namespace = manager.Namespace()
         self.shared_namespace.instance = NasGameConfig()
-
 
     def run(self):
         pk = Process(target=ListenerKeybord, args=(self.shared_namespace,), name='Keyboard')

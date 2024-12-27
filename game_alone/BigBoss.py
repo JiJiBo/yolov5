@@ -13,8 +13,8 @@ class BigBoss:
         self.shared_namespace.instance = NasGameConfig()
 
     def run(self):
-        pk = Process(target=ListenerKeybord, args=(self.shared_namespace,), name='Keyboard')
-        pl = Process(target=SeeScreen, args=(self.shared_namespace,), name='Loop')
+        pk = Process(target=ListenerKeybord, args=(self.shared_namespace.instance,), name='Keyboard')
+        pl = Process(target=SeeScreen, args=(self.shared_namespace.instance,), name='Loop')
         # 启动进程
         pk.start()
         pl.start()

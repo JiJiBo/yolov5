@@ -10,7 +10,7 @@ from game_alone.YoloHead import YoloHead
 
 class SeeScreen:
     def __init__(self, config):
-        self.config = config.instance
+        self.config = config
         self.width = self.config.width
         self.height = self.config.height
         self.fps = self.config.fps

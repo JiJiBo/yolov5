@@ -3,7 +3,7 @@ from pynput.keyboard import Listener, Key
 
 class ListenerKeybord:
     def __init__(self, config):
-        self.config = config.instance
+        self.config = config
         self.call()
 
 

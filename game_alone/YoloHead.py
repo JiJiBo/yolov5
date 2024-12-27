@@ -3,6 +3,7 @@ import numpy as np
 import torch
 
 from models.common import DetectMultiBackend
+from utils.general import non_max_suppression
 
 
 class YoloHead():
@@ -26,8 +27,10 @@ class YoloHead():
         return self.deal(pred)
 
     def deal(self, pred):
-        print(pred)
+        pred = non_max_suppression(pred)
         result = {}
+        print(pred)
+        print(pred[0].size())
         return result
 
 

@@ -49,13 +49,13 @@ class SeeScreen:
         """实时监视屏幕中央区域"""
         delay = 1 / self.fps
         self.overlay.open_overlay()
+        print("join")
         while not self.config.isDes:
             start_time = time.time()
             screenshot = self.capture_center_area()
             frame = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
             if self.config.isStarted:
                 pre = self.yolo.call(frame)
-
                 if pre["shoot"]:
                     self.mouse.move(pre["x"], pre["y"])
             elapsed_time = time.time() - start_time

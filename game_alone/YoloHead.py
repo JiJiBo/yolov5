@@ -61,7 +61,7 @@ class YoloHead:
         :param padding: 填充 (dw, dh)
         :return: 带有检测框和标签的帧
         """
-        pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.45, classes=None, agnostic=False, max_det=3)
+        pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.45, classes=None, agnostic=False, max_det=100)
         det = pred[0]
         maxConfidence = 0.0
         x, y = 0, 0
@@ -89,7 +89,7 @@ class YoloHead:
                 text_origin = (x1, y1 - 10 if y1 - 10 > 10 else y1 + 10)
                 cv2.rectangle(frame, (x1, y1 - text_size[1] - 10), (x1 + text_size[0], y1), color, -1)
                 cv2.putText(frame, label, text_origin, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-                if class_id <= 1 and self.config.isRed or class_id >= 2 and not self.config.isRed:
+                if class_id < 2 and self.config.isRed or class_id >= 2 and not self.config.isRed:
                     if maxConfidence < confidence:
                         maxConfidence = confidence
                         # 计算距离中心的位置

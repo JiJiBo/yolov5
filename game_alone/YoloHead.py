@@ -42,7 +42,7 @@ class YoloHead:
         :param frame: 输入的单帧图像
         :return: 带有检测框的帧
         """
-        self.shape = frame.shape [:2]
+        self.shape = frame.shape[:2]
         image, r, (dw, dh) = self.preprocess(frame)
         self.model.warmup(imgsz=(1, 3, self.img_size[0], self.img_size[1]))  # 预热模型
 
@@ -99,6 +99,7 @@ class YoloHead:
                 "x": x,
                 "y": y
             }
+        cv2.putText(frame, "--", (x+self.shape[0]/2, y+self.shape[0]/2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
         return {
             "frame": frame,
             "shoot": True,
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     config = NasGameConfig()
     model = YoloHead(r'C:\Users\12700\PycharmProjects\yolov5\runs\train\exp7\weights\last.pt', (640, 640), config)
     frame = cv2.imread(
-        r"C:\Users\12700\PycharmProjects\yolov5\mask\train\images\1133x768_20200130000023_jpg.rf.e8a099312aa174af48c5914c4986f91a.jpg")
+        r"C:\Users\12700\PycharmProjects\yolov5\mask\train\images\upload-productImg-1527496119162_320_234_jpeg.rf.2630f815b6cc48c80dd42bf539300d26.jpg")
     if frame is None:
         print("Error: Unable to read the input image.")
         exit(1)

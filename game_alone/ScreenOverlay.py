@@ -15,7 +15,7 @@ class TransparentOverlay:
         self.canvas = tk.Canvas(self.root, bg="black", highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
 
-        # 计算矩形位置
+        # 绘制矩形
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         self.rect_x1 = (screen_width - config.width) // 2
@@ -23,21 +23,19 @@ class TransparentOverlay:
         self.rect_x2 = self.rect_x1 + config.width
         self.rect_y2 = self.rect_y1 + config.height
 
-        # 绘制矩形
         self.canvas.create_rectangle(
             self.rect_x1, self.rect_y1, self.rect_x2, self.rect_y2, outline="red", width=5
         )
 
-        # 创建动态标签
+        # 创建动态标签（显示在左上角）
         self.label_text = self.canvas.create_text(
-            (self.rect_x1 + self.rect_x2) // 2,  # 中心位置 X
-            (self.rect_y1 + self.rect_y2) // 2,  # 中心位置 Y
-            text="", fill="white", font=("Arial", 24)
+            10, 10,  # 左上角位置 (x, y)
+            text="", fill="white", font=("Arial", 16), anchor="nw"  # anchor="nw" 设置左上对齐
         )
 
         # 初始化标签
         self.update_label()
-
+        self.open_overlay()
     def get_label(self):
         if self.config.isRed:
             body = "匪徒"
@@ -50,11 +48,11 @@ class TransparentOverlay:
         return f"{body} - {status}"
 
     def update_label(self):
-        """刷新标签内容"""
+        """刷新标签内容，每帧60帧刷新"""
         new_label = self.get_label()
         self.canvas.itemconfig(self.label_text, text=new_label)
-        # 定时更新标签（如果需要实时刷新）
-        self.root.after(1000, self.update_label)  # 每隔1秒刷新一次
+        # 定时更新标签（每帧约16.67ms）
+        self.root.after(16, self.update_label)  # 每秒60帧
 
     def open_overlay(self):
         self.root.mainloop()

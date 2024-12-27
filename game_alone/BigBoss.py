@@ -17,10 +17,11 @@ class BigBoss:
         self.data.update(self.INIT_DATA)
 
     def run(self):
-        pk = Process(target=ListenerKeybord, args=(self.INIT_DATA), name='Keyboard')
-        pl = Process(target=SeeScreen, args=(self.INIT_DATA), name='Loop')
+        pk = Process(target=ListenerKeybord, args=(self.data,), name='Keyboard')
+        pl = Process(target=SeeScreen, args=(self.data,), name='Loop')
         # 启动进程
         pk.start()
         pl.start()
-        # print(6)
+        # 等待进程完成
         pk.join()
+        pl.join()

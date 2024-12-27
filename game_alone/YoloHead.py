@@ -16,6 +16,8 @@ class YoloHead():
     def call(self, frame):
         image = np.array([frame])
         image = torch.from_numpy(image).float()
+        image = image.permute(0, 3, 1, 2, )
+        image = image.to(self.device)
         b, c, x, y = image.size()
         imgsz = (b, c, x, y)
         print(imgsz)

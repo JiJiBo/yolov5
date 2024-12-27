@@ -16,7 +16,8 @@ class YoloHead:
         self.model_path = model_path
         self.img_size = img_size
         self.device = select_device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model = DetectMultiBackend(self.model_path, device=self.device, dnn=False, data=r"C:\Users\12700\PycharmProjects\yolov5\mask\data.yaml",
+        self.model = DetectMultiBackend(self.model_path, device=self.device, dnn=False,
+                                        data=r"C:\Users\12700\PycharmProjects\yolov5\mask\data.yaml",
                                         fp16=False)
         self.model.eval()
         self.names = self.model.names
@@ -39,8 +40,9 @@ class YoloHead:
         :param frame: 输入的单帧图像
         :return: 带有检测框的帧
         """
+
         image = self.preprocess(frame)
-        self.model.warmup(imgsz=(1, 3, self.img_size[0],self.img_size[1]))  # 预热模型
+        self.model.warmup(imgsz=(1, 3, self.img_size[0], self.img_size[1]))  # 预热模型
 
         with Profile(device=self.device):
             pred = self.model(image, augment=False, visualize=False)
@@ -87,7 +89,7 @@ if __name__ == '__main__':
     if frame is None:
         print("Error: Unable to read the input image.")
         exit(1)
-
+    frame = cv2.resize(frame, (640, 640))
     frame_with_detections = model.call(frame)
     cv2.imshow('Detections', frame_with_detections)
     cv2.waitKey(0)

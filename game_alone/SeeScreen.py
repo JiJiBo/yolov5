@@ -8,13 +8,15 @@ from game_alone.YoloHead import YoloHead
 
 
 class SeeScreen:
-    def __init__(self, config, width=100, height=100, fps=30):
+    def __init__(self, config, width=640, height=640, fps=30):
         self.width = width
         self.height = height
         self.fps = fps
         self.screen_center = None
         self.config = config
-        self.yolo = YoloHead(self.config["config"].model_path)
+        if not self.screen_center:
+            self.get_screen_center()
+        self.yolo = YoloHead(self.config["config"].model_path, (width, height))
         self.mouse = MouseUtils()
 
     def get_screen_center(self):

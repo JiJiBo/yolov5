@@ -14,7 +14,7 @@ class YoloHead():
         self.model.eval()
 
     def call(self, frame):
-        model.warmup(imgsz=(1  , 3, *frame.size()))
+        self.model.warmup(imgsz=(1  , 3, *frame.size()))
         image = np.array([frame])
         image = torch.from_numpy(image).float()
         pred = self.model(image, augment=False, visualize=False).unsqueeze(0)

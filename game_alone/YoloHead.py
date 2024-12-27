@@ -3,7 +3,8 @@ import numpy as np
 import torch
 
 from models.common import DetectMultiBackend
-from utils.general import non_max_suppression
+from utils.general import non_max_suppression, scale_boxes
+from utils.plots import colors
 
 
 class YoloHead():
@@ -13,6 +14,7 @@ class YoloHead():
         self.model = DetectMultiBackend(self.model_path, device=self.device, dnn=False, data="csgo/data.yaml",
                                         fp16=False)
         self.model.eval()
+        self.names = self.model.names
 
     def call(self, frame):
         image = np.array([frame])
@@ -24,13 +26,20 @@ class YoloHead():
         self.model.warmup(imgsz=imgsz)
 
         pred = self.model(image, augment=False, visualize=False)
-        return self.deal(pred)
+        return self.deal(pred, frame)
 
-    def deal(self, pred):
-        pred = non_max_suppression(pred)
+    def deal(self, pred, frame):
+        pred = non_max_suppression(pred, conf_thres=0.5)
         result = {}
-        print(pred)
-        print(pred[0].size())
+        det = pred[0]
+        if len(det):
+            for *xyxy, conf, cls in reversed(det):
+                c = int(cls)  # integer class
+                print(self.names[int(c)])
+                confidence = float(conf)
+                confidence_str = f"{confidence:.2f}"
+                print(confidence_str)
+
         return result
 
 

@@ -6,15 +6,13 @@ class ListenerKeybord:
         self.config = config
         self.call()
 
-
     def release(self, key):
-        if key == Key.shift:
-            self.config.pause()
+        pass
 
     def press(self, key):
         if key == Key.shift:
-            self.config.start()
-        elif key == Key.end:
+            self.config.toogle()
+        if key == Key.end:
             self.config.destroy()
         elif key == Key.f2:
             self.config.setRed()

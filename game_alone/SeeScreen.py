@@ -17,7 +17,7 @@ class SeeScreen:
         self.height = self.config.height
         self.fps = self.config.fps
         self.screen_center = None
-        self.overlay = TransparentOverlay(self.width, self.height)
+
         if not self.screen_center:
             self.get_screen_center()
         self.yolo = YoloHead(self.config.model_path, (self.width, self.height), self.config)
@@ -48,7 +48,6 @@ class SeeScreen:
     def start_monitoring(self):
         """实时监视屏幕中央区域"""
         delay = 1 / self.fps
-        self.overlay.open_overlay()
         print("join")
         while not self.config.isDes:
             start_time = time.time()
@@ -60,7 +59,6 @@ class SeeScreen:
                     self.mouse.move(pre["x"], pre["y"])
             elapsed_time = time.time() - start_time
             time.sleep(max(0, delay - elapsed_time))
-        self.overlay.close_overlay()
         # 使用示例
 
 

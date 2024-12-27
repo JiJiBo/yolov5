@@ -2,7 +2,7 @@ from multiprocessing import Manager
 
 
 class NasGameConfig:
-    def __init__(self, width=640, height=640, fps=10):
+    def __init__(self, width=640, height=640, fps=60):
         """
         初始化共享配置。
         :param width: 游戏宽度
@@ -67,6 +67,13 @@ class NasGameConfig:
             return
         print("NasGameConfig started")
         self.shared_config["is_started"] = True
+
+    def toogle(self):
+        """启动配置"""
+        if self.shared_config["is_started"]:
+            self.pause()
+        else:
+            self.start()
 
     def pause(self):
         """暂停配置"""

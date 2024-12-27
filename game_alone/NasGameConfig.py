@@ -1,7 +1,6 @@
 class NasGameConfig:
     def __init__(self):
         self.isStarted = False
-        self.frame = None
         self.isDes = False
         self.model_path = "runs/train/last.pt"
 
@@ -13,5 +12,4 @@ class NasGameConfig:
 
     def destroy(self):
         self.isStarted = False
-        self.frame = None
         self.isDes = True

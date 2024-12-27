@@ -3,6 +3,7 @@ from PIL import ImageGrab
 import numpy as np
 import cv2
 
+from game_alone.MouseUtils import MouseUtils
 from game_alone.YoloHead import YoloHead
 
 
@@ -14,6 +15,7 @@ class SeeScreen:
         self.screen_center = None
         self.config = config
         self.yolo = YoloHead(self.config["config"].model_path)
+        self.mouse = MouseUtils()
 
     def get_screen_center(self):
         """获取屏幕中心的坐标"""
@@ -43,7 +45,10 @@ class SeeScreen:
             start_time = time.time()
             screenshot = self.capture_center_area()
             frame = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
-            self.config["config"].frame = frame
+            if self.config["config"].isStarted:
+                pre = self.yolo.call(frame)
+                if pre["shoot"]:
+                    self.mouse.move(pre["x"], pre["y"])
             elapsed_time = time.time() - start_time
             time.sleep(max(0, delay - elapsed_time))
 

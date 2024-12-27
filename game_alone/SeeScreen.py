@@ -62,6 +62,3 @@ class SeeScreen:
         # 使用示例
 
 
-if __name__ == "__main__":
-    monitor = SeeScreen(width=200, height=200, fps=30)
-    monitor.start_monitoring()

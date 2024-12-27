@@ -28,11 +28,11 @@ class YoloHead:
         :param frame: 输入的单帧图像 (H, W, C)
         :return: 预处理后的图像张量
         """
-        frame_resized = cv2.resize(frame, self.img_size)  # 调整大小到模型输入大小
+        frame_resized, r, (dw, dh) = self.letterbox(frame, new_shape=self.img_size)  # 使用 letterbox 调整图像
         image = frame_resized.astype(np.float32) / 255.0  # 归一化
         image = np.transpose(image, (2, 0, 1))  # HWC -> CHW
         image = np.expand_dims(image, axis=0)  # 增加 batch 维度
-        return torch.from_numpy(image).to(self.device)
+        return torch.from_numpy(image).to(self.device), r, (dw, dh)
 
     def call(self, frame):
         """
@@ -40,26 +40,30 @@ class YoloHead:
         :param frame: 输入的单帧图像
         :return: 带有检测框的帧
         """
-
-        image = self.preprocess(frame)
+        image, r, (dw, dh) = self.preprocess(frame)
         self.model.warmup(imgsz=(1, 3, self.img_size[0], self.img_size[1]))  # 预热模型
 
         with Profile(device=self.device):
             pred = self.model(image, augment=False, visualize=False)
 
-        return self.deal(pred, frame)
+        return self.deal(pred, frame, r, (dw, dh))
 
-    def deal(self, pred, frame):
+    def deal(self, pred, frame, r, padding):
         """
         处理 YOLO 模型的预测结果，并在图像上绘制边界框
         :param pred: 模型的原始预测结果
         :param frame: 原始输入帧
+        :param r: 缩放比例
+        :param padding: 填充 (dw, dh)
         :return: 带有检测框和标签的帧
         """
         pred = non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False, max_det=1000)
         det = pred[0]
         if det is not None and len(det):
+            det[:, :4] -= torch.tensor(padding * 2, device=det.device)  # 去掉填充偏移
+            det[:, :4] /= r  # 缩放回原始尺寸
             det[:, :4] = det[:, :4].round()  # 将框的坐标转换为整数
+
             for *xyxy, conf, cls in reversed(det):
                 x1, y1, x2, y2 = map(int, xyxy)
                 confidence = float(conf)
@@ -81,6 +85,44 @@ class YoloHead:
 
         return frame
 
+    def letterbox(self, image, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True):
+        """
+        将图像调整到目标大小，同时保持宽高比。
+        :param image: 输入图像
+        :param new_shape: 目标尺寸 (height, width)
+        :param color: 填充颜色
+        :param auto: 自动调整为最小尺寸
+        :param scaleFill: 强制填充到目标大小
+        :param scaleup: 是否允许放大图像
+        :return: 调整后的图像和调整参数
+        """
+        shape = image.shape[:2]  # 当前图像的高度和宽度
+        if isinstance(new_shape, int):
+            new_shape = (new_shape, new_shape)
+
+        r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])  # 缩放比例
+        if not scaleup:  # 仅缩小，不放大
+            r = min(r, 1.0)
+
+        new_unpad = (int(round(shape[1] * r)), int(round(shape[0] * r)))  # 调整后的尺寸
+        dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # 填充
+        if auto:  # 最小矩形
+            dw, dh = np.mod(dw, 32), np.mod(dh, 32)  # 使填充量为32的倍数
+        elif scaleFill:  # 强制填充
+            dw, dh = 0, 0
+            new_unpad = new_shape
+            r = new_shape[1] / shape[1], new_shape[0] / shape[0]
+
+        dw //= 2  # 左右填充
+        dh //= 2  # 上下填充
+
+        if shape[::-1] != new_unpad:  # 调整图像大小
+            image = cv2.resize(image, new_unpad, interpolation=cv2.INTER_LINEAR)
+        top, bottom = dh, dh
+        left, right = dw, dw
+        image = cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # 添加填充
+        return image, r, (dw, dh)
+
 
 if __name__ == '__main__':
     model = YoloHead(r'C:\Users\12700\PycharmProjects\yolov5\runs\train\exp7\weights\last.pt', (640, 640))
@@ -89,7 +131,6 @@ if __name__ == '__main__':
     if frame is None:
         print("Error: Unable to read the input image.")
         exit(1)
-    frame = cv2.resize(frame, (640, 640))
     frame_with_detections = model.call(frame)
     cv2.imshow('Detections', frame_with_detections)
     cv2.waitKey(0)

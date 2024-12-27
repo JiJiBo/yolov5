@@ -16,12 +16,9 @@ class BigBoss:
         self.data = manager.dict()
         self.data.update(self.INIT_DATA)
 
-        self.keyboard=ListenerKeybord(self.config)
-        self.see = SeeScreen(self.INIT_DATA)
     def run(self):
-
-        pk = Process(target=self.keyboard.call, args=( ), name='Keyboard')
-        pl = Process(target=self.see.start_monitoring, args=( ), name='Loop')
+        pk = Process(target=ListenerKeybord, args=(self.INIT_DATA), name='Keyboard')
+        pl = Process(target=SeeScreen, args=(self.INIT_DATA), name='Loop')
         # 启动进程
         pk.start()
         pl.start()

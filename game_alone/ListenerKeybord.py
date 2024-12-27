@@ -7,11 +7,11 @@ class ListenerKeybord:
 
     def release(self, key):
         if key == Key.shift:
-            self.config.pause()
+            self.config["config"].pause()
 
     def press(self, key):
         if key == Key.shift:
-            self.config.start()
+            self.config["config"].start()
 
     def call(self):
         with Listener(on_release=self.release, on_press=self.press) as k:

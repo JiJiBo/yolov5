@@ -1,0 +1,51 @@
+import time
+from PIL import ImageGrab
+import numpy as np
+import cv2
+
+
+class SeeScreen:
+    def __init__(self, config, width=100, height=100, fps=30):
+        self.width = width
+        self.height = height
+        self.fps = fps
+        self.screen_center = None
+        self.config = config
+
+    def get_screen_center(self):
+        """获取屏幕中心的坐标"""
+        screen = ImageGrab.grab()
+        screen_width, screen_height = screen.size
+        center_x = screen_width // 2
+        center_y = screen_height // 2
+        self.screen_center = (center_x, center_y)
+
+    def capture_center_area(self):
+        """捕获屏幕中心指定宽度和高度的区域"""
+        if not self.screen_center:
+            self.get_screen_center()
+        center_x, center_y = self.screen_center
+        left = center_x - self.width // 2
+        top = center_y - self.height // 2
+        right = center_x + self.width // 2
+        bottom = center_y + self.height // 2
+        # 截取屏幕中心区域
+        screenshot = ImageGrab.grab(bbox=(left, top, right, bottom))
+        return screenshot
+
+    def start_monitoring(self):
+        """实时监视屏幕中央区域"""
+        delay = 1 / self.fps
+        while not self.config["config"].isDes:
+            start_time = time.time()
+            screenshot = self.capture_center_area()
+            frame = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
+            self.config["config"].frame = frame
+            elapsed_time = time.time() - start_time
+            time.sleep(max(0, delay - elapsed_time))
+
+
+# 使用示例
+if __name__ == "__main__":
+    monitor = SeeScreen(width=200, height=200, fps=30)
+    monitor.start_monitoring()

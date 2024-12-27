@@ -11,15 +11,15 @@ from game_alone.YoloHead import YoloHead
 class SeeScreen:
     def __init__(self, config):
         self.config = config
-        self.width = self.config.width
-        self.height = self.config.height
-        self.fps = self.config.fps
+        self.width = self.config.get_config().width
+        self.height = self.config.get_config().height
+        self.fps = self.config.get_config().fps
         self.screen_center = None
         self.overlay = ScreenOverlay(width=self.width, height=self.height)
         if not self.screen_center:
             self.get_screen_center()
-        self.yolo = YoloHead(self.config.model_path, (self.width, self.height), self.config)
-        self.mouse = MouseUtils(self.config.ads)
+        self.yolo = YoloHead(self.config.get_config().model_path, (self.width, self.height), self.config.get_config())
+        self.mouse = MouseUtils(self.config.get_config().ads)
         self.start_monitoring()
 
     def get_screen_center(self):
@@ -46,11 +46,12 @@ class SeeScreen:
     def start_monitoring(self):
         """实时监视屏幕中央区域"""
         delay = 1 / self.fps
-        while not self.config.isDes:
+        while not self.config.get_config().isDes:
             start_time = time.time()
             screenshot = self.capture_center_area()
             frame = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
-            if self.config.isStarted:
+            if self.config.get_config().isStarted:
+
                 pre = self.yolo.call(frame)
                 self.overlay.start(pre["x"], pre["y"])
                 if pre["shoot"]:

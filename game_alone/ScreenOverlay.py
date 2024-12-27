@@ -37,7 +37,7 @@ class TransparentOverlay:
     def open_overlay(self):
         """打开窗口"""
         self.root.deiconify()
-        self.root.mainloop()
+        self.root.after(0, self.root.mainloop)
 
     def close_overlay(self):
         """关闭窗口"""

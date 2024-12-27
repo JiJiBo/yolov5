@@ -76,8 +76,8 @@ class YoloHead:
 
                 # 打印调试信息
                 print(f"Class: {self.names[class_id]}, Confidence: {confidence:.2f}, Coordinates: {x1, y1, x2, y2}")
-                box_center_x = (x1 + x2) // 2 - self.shape[0] / 2
-                box_center_y = (y1 + y2) // 2 - self.shape[1] / 2
+                box_center_x = (x1 + x2) // 2 - self.shape[1] / 2
+                box_center_y = (y1 + y2) // 2 - self.shape[0] / 2
 
                 label = f"{self.names[class_id]} {confidence:.2f}"
                 color = (0, 255, 0)  # 绿色
@@ -99,7 +99,8 @@ class YoloHead:
                 "x": x,
                 "y": y
             }
-        cv2.putText(frame, "--", (x+self.shape[0]/2, y+self.shape[0]/2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
+        loc = (x + self.shape[1] / 2, y + self.shape[0] / 2)
+        cv2.putText(frame, "0", tuple(map(int, loc)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
         return {
             "frame": frame,
             "shoot": True,
@@ -150,7 +151,7 @@ if __name__ == '__main__':
     config = NasGameConfig()
     model = YoloHead(r'C:\Users\12700\PycharmProjects\yolov5\runs\train\exp7\weights\last.pt', (640, 640), config)
     frame = cv2.imread(
-        r"C:\Users\12700\PycharmProjects\yolov5\mask\train\images\upload-productImg-1527496119162_320_234_jpeg.rf.2630f815b6cc48c80dd42bf539300d26.jpg")
+        r"C:\Users\12700\PycharmProjects\yolov5\mask\valid\images\r1400018548960op29s_jpg.rf.1aa9ecf11eb6e101f0bbdf0c3048702c.jpg")
     if frame is None:
         print("Error: Unable to read the input image.")
         exit(1)

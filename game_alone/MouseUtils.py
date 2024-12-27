@@ -2,9 +2,9 @@ import ctypes
 
 
 class MouseUtils:
-    def __init__(self):
+    def __init__(self, ads=0.95):
         try:
-
+            self.ads = ads
             import os
             root = os.path.abspath(os.path.dirname(__file__))
             self.driver = ctypes.CDLL(f'{root}/logitech.driver.dll')
@@ -17,7 +17,12 @@ class MouseUtils:
     def move(self, x: int, y: int):
         if (x == 0) & (y == 0):
             return
-        self.driver.moveR(x, y, True)
+        ax = int(x * self.ads)
+        ay = int(y * self.ads)
+
+        self.driver.moveR(ax, ay, True)
+        self.press(1)
+        self.release(1)
 
     def press(self, code):
         self.driver.mouse_down(code)

@@ -19,7 +19,7 @@ class SeeScreen:
             self.get_screen_center()
         self.yolo = YoloHead(self.config["config"].model_path, (self.width, self.height), self.config["config"])
         self.mouse = MouseUtils(self.config["config"].ads)
-
+        self.start_monitoring()
     def get_screen_center(self):
         """获取屏幕中心的坐标"""
         screen = ImageGrab.grab()

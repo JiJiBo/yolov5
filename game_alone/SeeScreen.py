@@ -16,7 +16,7 @@ class SeeScreen:
         self.config = config
         if not self.screen_center:
             self.get_screen_center()
-        self.yolo = YoloHead(self.config["config"].model_path, (width, height))
+        self.yolo = YoloHead(self.config["config"].model_path, (width, height),self.config["config"])
         self.mouse = MouseUtils()
 
     def get_screen_center(self):

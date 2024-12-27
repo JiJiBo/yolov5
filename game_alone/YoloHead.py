@@ -8,12 +8,13 @@ from utils.torch_utils import select_device
 
 
 class YoloHead:
-    def __init__(self, model_path, img_size):
+    def __init__(self, model_path, img_size, config):
         """
         初始化 YoloHead 模型
         :param model_path: YOLO 模型的权重路径
         """
         self.model_path = model_path
+        self.config = config
         self.img_size = img_size
         self.device = select_device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model = DetectMultiBackend(self.model_path, device=self.device, dnn=False,
@@ -59,6 +60,8 @@ class YoloHead:
         """
         pred = non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False, max_det=1000)
         det = pred[0]
+        maxConfidence = 0.0
+        x, y = 0, 0
         if det is not None and len(det):
             det[:, :4] -= torch.tensor(padding * 2, device=det.device)  # 去掉填充偏移
             det[:, :4] /= r  # 缩放回原始尺寸
@@ -71,8 +74,8 @@ class YoloHead:
 
                 # 打印调试信息
                 print(f"Class: {self.names[class_id]}, Confidence: {confidence:.2f}, Coordinates: {x1, y1, x2, y2}")
-
-                # 绘制边界框
+                box_center_x = (x1 + x2) // 2
+                box_center_y = (y1 + y2) // 2  # 绘制边界框
                 label = f"{self.names[class_id]} {confidence:.2f}"
                 color = (0, 255, 0)  # 绿色
                 cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
@@ -82,8 +85,23 @@ class YoloHead:
                 text_origin = (x1, y1 - 10 if y1 - 10 > 10 else y1 + 10)
                 cv2.rectangle(frame, (x1, y1 - text_size[1] - 10), (x1 + text_size[0], y1), color, -1)
                 cv2.putText(frame, label, text_origin, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
-        return frame
+                if class_id < 2 and self.config.isRed or class_id >= 2 and not self.config.isRed:
+                    if maxConfidence < confidence:
+                        maxConfidence = confidence
+                        # 计算距离中心的位置
+                        x, y = box_center_x, box_center_y
+        else:
+            return {
+                "shoot": False,
+                "x": x,
+                "y": y
+            }
+        return {
+            "frame": frame,
+            "shoot": True,
+            "x": x,
+            "y": y
+        }
 
     def letterbox(self, image, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True):
         """
@@ -132,6 +150,9 @@ if __name__ == '__main__':
         print("Error: Unable to read the input image.")
         exit(1)
     frame_with_detections = model.call(frame)
-    cv2.imshow('Detections', frame_with_detections)
+    if not frame_with_detections["shoot"]:
+        print("Error: Unable to detect the input image.")
+        exit(1)
+    cv2.imshow('Detections', frame_with_detections["frame"])
     cv2.waitKey(0)
     cv2.destroyAllWindows()

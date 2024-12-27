@@ -4,12 +4,13 @@ from pynput.keyboard import Listener, Key
 class ListenerKeybord:
     def __init__(self, config):
         self.config = config
-
+        self.call()
     def release(self, key):
         if key == Key.shift:
             self.config["config"].pause()
 
     def press(self, key):
+        print(key)
         if key == Key.shift:
             self.config["config"].start()
         elif key == Key.end:

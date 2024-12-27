@@ -21,6 +21,8 @@ class MouseUtils:
         self.driver.moveR(ax, ay, True)
         self.press(1)
         self.release(1)
+        self.press(1)
+        self.release(1)
 
     def press(self, code):
         self.driver.mouse_down(code)

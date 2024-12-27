@@ -60,7 +60,7 @@ class YoloHead:
         :param padding: 填充 (dw, dh)
         :return: 带有检测框和标签的帧
         """
-        pred = non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False, max_det=1000)
+        pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.45, classes=None, agnostic=False, max_det=3)
         det = pred[0]
         maxConfidence = 0.0
         x, y = 0, 0

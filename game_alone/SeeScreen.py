@@ -50,9 +50,7 @@ class SeeScreen:
             start_time = time.time()
             screenshot = self.capture_center_area()
             frame = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
-            print(self.config.isStarted)
             if self.config.isStarted:
-
                 pre = self.yolo.call(frame)
                 self.overlay.start(pre["x"], pre["y"])
                 if pre["shoot"]:

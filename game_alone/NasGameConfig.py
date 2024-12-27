@@ -1,7 +1,8 @@
 from multiprocessing import Manager
 
+
 class NasGameConfig:
-    def __init__(self, width=640, height=640, fps=30):
+    def __init__(self, width=640, height=640, fps=10):
         """
         初始化共享配置。
         :param width: 游戏宽度
@@ -59,6 +60,7 @@ class NasGameConfig:
     def fps(self):
         """帧率"""
         return self.shared_config["fps"]
+
     def start(self):
         """启动配置"""
         if self.shared_config["is_started"]:

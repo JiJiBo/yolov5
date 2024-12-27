@@ -3,22 +3,22 @@ from pynput.keyboard import Listener, Key
 
 class ListenerKeybord:
     def __init__(self, config):
-        self.config = config.instance
+        self.config = config
         self.call()
 
     def release(self, key):
         if key == Key.shift:
-            self.config.pause()
+            self.config.instance.pause()
 
     def press(self, key):
         if key == Key.shift:
-            self.config.start()
+            self.config.instance.start()
         elif key == Key.end:
-            self.config.destroy()
+            self.config.instance.destroy()
         elif key == Key.f2:
-            self.config.setRed()
+            self.config.instance.setRed()
         elif key == Key.f1:
-            self.config.setBlue()
+            self.config.instance.setBlue()
 
     def call(self):
         with Listener(on_release=self.release, on_press=self.press) as k:

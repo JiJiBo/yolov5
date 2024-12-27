@@ -8,13 +8,11 @@ from game_alone.SeeScreen import SeeScreen
 
 class BigBoss:
     def __init__(self):
-        manager = multiprocessing.Manager()
-        self.shared_namespace = manager.Namespace()
-        self.shared_namespace.instance = NasGameConfig()
+        self.instance = NasGameConfig()
 
     def run(self):
-        pk = Process(target=ListenerKeybord, args=(self.shared_namespace.instance,), name='Keyboard')
-        pl = Process(target=SeeScreen, args=(self.shared_namespace.instance,), name='Loop')
+        pk = Process(target=ListenerKeybord, args=(self.instance,), name='Keyboard')
+        pl = Process(target=SeeScreen, args=(self.instance,), name='Loop')
         # 启动进程
         pk.start()
         pl.start()

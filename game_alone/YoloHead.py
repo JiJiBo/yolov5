@@ -11,8 +11,10 @@ class YoloHead():
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model = DetectMultiBackend(self.model_path, device=self.device, dnn=False, data="csgo/data.yaml",
                                         fp16=False)
+        self.model.eval()
 
     def call(self, frame):
+        model.warmup(imgsz=(1  , 3, *frame.size()))
         image = np.array([frame])
         image = torch.from_numpy(image).float()
         pred = self.model(image, augment=False, visualize=False).unsqueeze(0)

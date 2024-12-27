@@ -24,6 +24,8 @@ class YoloHead:
         self.model.eval()
         self.names = self.model.names
 
+        self.model.warmup(imgsz=(1, 3, self.img_size[0], self.img_size[1]))  # 预热模型
+
     def preprocess(self, frame):
         """
         预处理图像，将其转换为模型输入格式
@@ -44,7 +46,6 @@ class YoloHead:
         """
         self.shape = frame.shape[:2]
         image, r, (dw, dh) = self.preprocess(frame)
-        self.model.warmup(imgsz=(1, 3, self.img_size[0], self.img_size[1]))  # 预热模型
 
         with Profile(device=self.device):
             pred = self.model(image, augment=False, visualize=False)

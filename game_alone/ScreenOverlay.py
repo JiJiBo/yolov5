@@ -1,94 +1,70 @@
-import tkinter as tk
-from tkinter import Canvas
-from threading import Thread, Lock
+import sys
+import cv2
+import numpy as np
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
+from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtCore import Qt
 
 
-class ScreenOverlay:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.root = None
-        self.canvas = None
-        self.is_running = False  # 控制框的状态
-        self.lock = Lock()  # 用于线程安全的锁
+class TransparentWindow(QMainWindow):
+    def __init__(self, rect_width, rect_height):
+        super().__init__()
+        screen = app.primaryScreen().size()
+        rect_x = (screen.width() - rect_width) // 2
+        rect_y = (screen.height() - rect_height) // 2
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.showFullScreen()
 
-    def create_overlay_window(self):
-        """创建透明窗口"""
-        self.root = tk.Tk()
-        self.root.attributes('-fullscreen', True)  # 设置窗口全屏
-        self.root.attributes('-topmost', True)  # 窗口置顶
-        self.root.attributes('-transparentcolor', 'black')  # 设置透明背景
-        self.canvas = Canvas(self.root, bg='black', highlightthickness=0)
-        self.canvas.pack(fill=tk.BOTH, expand=True)
+        # 窗口中间绘制矩形
+        self.rect_x = rect_x
+        self.rect_y = rect_y
+        self.rect_width = rect_width
+        self.rect_height = rect_height
 
-    def draw_center_box(self, x=None, y=None):
-        """在屏幕中心绘制一个矩形，并绘制相对于中心的点"""
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
+        # 创建用于显示的 QLabel
+        self.label = QLabel(self)
+        self.label.setGeometry(0, 0, self.width(), self.height())
 
-        center_x = screen_width // 2
-        center_y = screen_height // 2
-        left = center_x - self.width // 2
-        top = center_y - self.height // 2
-        right = center_x + self.width // 2
-        bottom = center_y + self.height // 2
+        # 绘制图像
+        self.draw_image()
 
-        # 绘制红色边框矩形
-        self.canvas.create_rectangle(left, top, right, bottom, outline="red", width=2)
+    def draw_image(self):
+        # 创建一个透明背景的图片
+        img = np.zeros((self.height(), self.width(), 4), dtype=np.uint8)
 
-        # 如果提供了点的坐标，绘制该点
-        if x is not None and y is not None:
-            # 将点的相对坐标转换为绝对坐标
-            point_x = center_x + x
-            point_y = center_y + y
-            self.canvas.create_oval(
-                point_x - 3, point_y - 3, point_x + 3, point_y + 3, fill="blue"
-            )
+        # 绘制矩形线框
+        color = (255, 0, 0, 255)  # RGBA: 红色，完全不透明
+        thickness = 3  # 线框宽度
+        cv2.rectangle(img,
+                      (self.rect_x, self.rect_y),
+                      (self.rect_x + self.rect_width, self.rect_y + self.rect_height),
+                      color,
+                      thickness)
 
-    def start(self, x=0, y=0):
-        """启动绘制框并绘制相对于中心的点"""
-        with self.lock:
-            if not self.is_running:
-                self.is_running = True
-                Thread(target=self.run, args=(x, y), daemon=True).start()
+        # 转换为 QImage
+        qimg = QImage(img.data, img.shape[1], img.shape[0], QImage.Format_RGBA8888)
+        pixmap = QPixmap.fromImage(qimg)
 
-    def stop(self):
-        """销毁框并停止窗口"""
-        with self.lock:
-            if self.is_running:
-                self.is_running = False
-                if self.root:
-                    self.root.quit()  # 停止 Tkinter 主循环
-                    self.root = None  # 释放资源
+        # 设置到 QLabel 显示
+        self.label.setPixmap(pixmap)
 
-    def run(self, x, y):
-        """运行透明窗口"""
-        self.create_overlay_window()
-        self.draw_center_box(x, y)
-        self.root.mainloop()
-        # 主循环结束后设置状态为停止
-        with self.lock:
-            self.is_running = False
+    def mousePressEvent(self, event):
+        # 禁用鼠标点击事件，防止窗口失去焦点
+        pass
 
 
-# 示例使用
 if __name__ == "__main__":
-    import time
+    app = QApplication(sys.argv)
 
-    overlay = ScreenOverlay(width=200, height=200)
+    # 窗口大小和矩形参数
+    screen = app.primaryScreen().size()
+    rect_width, rect_height = 200, 100
+    rect_x = (screen.width() - rect_width) // 2
+    rect_y = (screen.height() - rect_height) // 2
 
-    # 连续调用 start 和 stop
-    print("启动画框并绘制点 (50, -50)")
-    overlay.start(x=50, y=-50)
-    time.sleep(2)
+    # 创建窗口
+    window = TransparentWindow(rect_width, rect_height)
+    window.show()
 
-    print("销毁画框")
-    overlay.stop()
-    time.sleep(1)
-
-    print("再次启动画框并绘制点 (-30, 30)")
-    overlay.start(x=-30, y=30)
-    time.sleep(2)
-
-    print("再次销毁画框")
-    overlay.stop()
+    sys.exit(app.exec_())

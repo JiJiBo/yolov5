@@ -53,6 +53,7 @@ class SeeScreen:
             if self.config["config"].isStarted:
                 self.overlay.start()
                 pre = self.yolo.call(frame)
+                self.overlay.start(pre["x"], pre["y"])
                 if pre["shoot"]:
                     self.mouse.move(pre["x"], pre["y"])
             else:

@@ -1,6 +1,4 @@
-import threading
 import tkinter as tk
-
 
 class TransparentOverlay:
     def __init__(self, width, height):
@@ -37,17 +35,21 @@ class TransparentOverlay:
 
     def open_overlay(self):
         """打开窗口"""
-        threading.Thread(target=self._run_overlay, daemon=True).start()
+        self.root.after(0, self._non_blocking_loop)
 
-    def _run_overlay(self):
-        self.root.mainloop()
+    def _non_blocking_loop(self):
+        """非阻塞主循环"""
+        try:
+            self.root.update()
+            self.root.after(10, self._non_blocking_loop)  # 循环调用
+        except tk.TclError:  # 窗口关闭时防止报错
+            pass
 
     def close_overlay(self):
         """关闭窗口"""
         self.root.destroy()
 
-
 if __name__ == "__main__":
     overlay = TransparentOverlay(100,200)
     overlay.open_overlay()
-    print("Overlay is running in a non-blocking thread.")
+    print("Overlay is running in the main thread.")

@@ -1,5 +1,7 @@
 import tkinter as tk
-
+import threading
+import queue
+import time
 class TransparentOverlay:
     def __init__(self, width, height):
         self.root = tk.Tk()
@@ -26,18 +28,28 @@ class TransparentOverlay:
             self.rect_x1, self.rect_y1, self.rect_x2, self.rect_y2, outline="red", width=5
         )
 
-    def open_overlay(self):
-        """显示透明窗口（非阻塞模式）"""
-        self.root.after(10, self._non_blocking_loop)
+        # 创建一个队列，用于线程间通信
+        self.queue = queue.Queue()
 
-    def _non_blocking_loop(self):
-        """非阻塞主循环"""
-        try:
-            self.root.update_idletasks()
-            self.root.update()
-            self.root.after(10, self._non_blocking_loop)
-        except tk.TclError:  # 窗口关闭时防止报错
-            pass
+    def open_overlay(self):
+        """显示透明窗口"""
+        threading.Thread(target=self.run_task, daemon=True).start()
+        self.check_queue()
+        self.root.mainloop()
+
+    def run_task(self):
+        """子线程中运行的任务"""
+        for i in range(5):  # 模拟长时间任务
+            self.queue.put(f"Task {i} completed!")
+            time.sleep(1)
+
+    def check_queue(self):
+        """检查队列并更新界面"""
+        while not self.queue.empty():
+            message = self.queue.get()
+            print(message)  # 在主线程打印
+            # 也可以在界面上更新内容，例如显示消息
+        self.root.after(100, self.check_queue)
 
     def close_overlay(self):
         """关闭窗口"""
@@ -45,6 +57,6 @@ class TransparentOverlay:
             self.root.destroy()
 
 if __name__ == "__main__":
+
     overlay = TransparentOverlay(300, 200)
     overlay.open_overlay()
-    print("Overlay is running without blocking the main thread.")

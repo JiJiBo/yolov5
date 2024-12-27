@@ -10,7 +10,6 @@ class ListenerKeybord:
             self.config["config"].pause()
 
     def press(self, key):
-        print(key)
         if key == Key.shift:
             self.config["config"].start()
         elif key == Key.end:

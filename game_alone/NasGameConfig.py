@@ -10,15 +10,18 @@ class NasGameConfig:
         self.fps = fps
 
     def start(self):
+        if self.isStarted:
+            return
         print("NasGameConfig start")
         self.isStarted = True
 
     def pause(self):
+        if not self.isStarted:
+            return
         print("NasGameConfig pause")
         self.isStarted = False
 
     def destroy(self):
-        print("NasGameConfig destroy")
         self.isStarted = False
         self.isDes = True
 

@@ -1,4 +1,6 @@
 import time
+
+import winsound
 from PIL import ImageGrab
 import numpy as np
 import cv2
@@ -54,6 +56,7 @@ class SeeScreen:
                 pre = self.yolo.call(frame)
                 self.overlay.start(pre["x"], pre["y"])
                 if pre["shoot"]:
+                    winsound.Beep(800, 200)
                     self.mouse.move(pre["x"], pre["y"])
             else:
                 self.overlay.stop()

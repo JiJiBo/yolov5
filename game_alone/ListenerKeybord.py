@@ -12,6 +12,8 @@ class ListenerKeybord:
     def press(self, key):
         if key == Key.shift:
             self.config.toogle()
+        if key == Key.f3:
+            self.config.toogle()
         if key == Key.end:
             self.config.destroy()
         elif key == Key.f2:

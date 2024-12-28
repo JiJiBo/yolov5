@@ -46,7 +46,7 @@ class TransparentOverlay:
             status = "启动"
         else:
             status = "暂停"
-        return f"{body} - {status} fps: {self.config.fps_current}"
+        return f" {status} fps: {self.config.fps_current}"
 
     def update_label(self):
         new_label = self.get_label()

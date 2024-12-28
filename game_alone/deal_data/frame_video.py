@@ -32,6 +32,7 @@ def video_to_frames(video_path, output_folder, frame_interval=1):
         # 每隔 frame_interval 保存一帧
         if current_frame % frame_interval == 0:
             output_file = os.path.join(output_folder, f"frame_{current_frame:05d}.jpg")
+            print("save a frame", output_file)
             cv2.imwrite(output_file, frame)
             saved_frames += 1
 
@@ -43,7 +44,7 @@ def video_to_frames(video_path, output_folder, frame_interval=1):
 
 # 示例用法
 video_path = r"C:\Users\12700\PycharmProjects\yolov5\cf_monster\穿越火线 怪物.mp4"  # 替换为你的视频文件路径
-output_folder = r"C:\Users\12700\PycharmProjects\yolov5\cf_monster\穿越火线怪物"  # 替换为你的输出目录路径
-frame_interval = 20
+output_folder = r"..\..\cf_monster\cf"  # 替换为你的输出目录路径
+frame_interval = 30
 
 video_to_frames(video_path, output_folder, frame_interval)

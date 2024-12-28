@@ -2,7 +2,7 @@ from multiprocessing import Manager
 
 
 class NasGameConfig:
-    def __init__(self, width=640, height=640, fps=60):
+    def __init__(self, width=960, height=640, fps=60):
         """
         初始化共享配置。
         :param width: 游戏宽度

@@ -43,7 +43,7 @@ def video_to_frames(video_path, output_folder, frame_interval=1):
 
 
 # 示例用法
-video_path = r"C:\Users\12700\PycharmProjects\yolov5\cf_monster\穿越火线 怪物.mp4"  # 替换为你的视频文件路径
+video_path = r"/cf_monster/穿越火线_怪物.mp4"  # 替换为你的视频文件路径
 output_folder = r"..\..\cf_monster\cf"  # 替换为你的输出目录路径
 frame_interval = 30
 

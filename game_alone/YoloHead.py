@@ -19,7 +19,7 @@ class YoloHead:
         self.img_size = img_size
         self.device = select_device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model = DetectMultiBackend(self.model_path, device=self.device, dnn=False,
-                                        data=r"csgo/data.yaml",
+                                        data=self.config.data,
                                         fp16=False)
         self.model.eval()
         self.names = self.model.names

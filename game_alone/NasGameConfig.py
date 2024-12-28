@@ -13,7 +13,8 @@ class NasGameConfig:
         self.shared_config = manager.dict({
             "is_started": False,
             "is_destroyed": False,
-            "model_path": "csgo/best.pt",
+            "model_path": "cf_monster/out_dir/best.pt",
+            "data": "cf_monster/out_dir/dataset.yaml",
             "is_red": True,
             "ads": 0.95,
             "width": width,
@@ -31,6 +32,11 @@ class NasGameConfig:
     def isDes(self):
         """是否已销毁"""
         return self.shared_config["is_destroyed"]
+
+    @property
+    def data(self):
+        """是否已销毁"""
+        return self.shared_config["data"]
 
     @property
     def model_path(self):
@@ -61,6 +67,7 @@ class NasGameConfig:
     def fps(self):
         """帧率"""
         return self.shared_config["fps"]
+
     @property
     def fps_current(self):
         """帧率"""

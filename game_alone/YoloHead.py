@@ -89,12 +89,12 @@ class YoloHead:
                 text_origin = (x1, y1 - 10 if y1 - 10 > 10 else y1 + 10)
                 cv2.rectangle(frame, (x1, y1 - text_size[1] - 10), (x1 + text_size[0], y1), color, -1)
                 cv2.putText(frame, label, text_origin, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-                if class_id == 1 or class_id == 3:
-                    # if class_id < 2 and self.config.isRed or class_id >= 2 and not self.config.isRed:
-                    if maxConfidence < confidence:
-                        maxConfidence = confidence
-                        # 计算距离中心的位置
-                        x, y = box_center_x, box_center_y
+                # if class_id == 1 or class_id == 3:
+                # if class_id < 2 and self.config.isRed or class_id >= 2 and not self.config.isRed:
+                if maxConfidence < confidence:
+                    maxConfidence = confidence
+                    # 计算距离中心的位置
+                    x, y = box_center_x, box_center_y
         else:
             return {
                 "shoot": False,

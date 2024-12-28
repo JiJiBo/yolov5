@@ -39,17 +39,16 @@ class TransparentOverlay:
 
     def get_label(self):
         if self.config.isRed:
-            body = "匪徒"
+            body = "是匪徒"
         else:
-            body = "警察"
+            body = "是警察"
         if self.config.isStarted:
             status = "启动"
         else:
             status = "暂停"
-        return f"{body} - {status}"
+        return f"{body} - {status} fps: {self.config.fps_current}"
 
     def update_label(self):
-        """刷新标签内容，每帧60帧刷新"""
         new_label = self.get_label()
         self.canvas.itemconfig(self.label_text, text=new_label)
         self.root.after(int(self.time), self.update_label)  # 每秒60帧

@@ -32,6 +32,9 @@ class SeeScreen:
         center_y = screen_height // 2
         self.screen_center = (center_x, center_y)
 
+        self.frame_count = 0
+        self.start_time = time.time()
+
     def capture_center_area(self):
         """捕获屏幕中心指定宽度和高度的区域"""
         if not self.screen_center:
@@ -47,18 +50,22 @@ class SeeScreen:
 
     def start_monitoring(self):
         """实时监视屏幕中央区域"""
-        delay = 1 / self.fps
         print("join")
         while not self.config.isDes:
-            start_time = time.time()
             screenshot = self.capture_center_area()
             frame = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)
+
             if self.config.isStarted:
                 pre = self.yolo.call(frame)
                 if pre["shoot"]:
                     self.mouse.move(pre["x"], pre["y"])
-            elapsed_time = time.time() - start_time
-            time.sleep(max(0, delay - elapsed_time))
-        # 使用示例
 
+            # 计算 FPS
+            self.frame_count += 1
+            elapsed_time = time.time() - self.start_time
+            if elapsed_time >= 1:
+                fps = self.frame_count / elapsed_time
+                self.config.shared_config["fps_current"] = fps
+                self.frame_count = 0
+                self.start_time = time.time()
 

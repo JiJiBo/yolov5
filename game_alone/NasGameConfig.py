@@ -18,6 +18,7 @@ class NasGameConfig:
             "ads": 0.95,
             "width": width,
             "height": height,
+            "fps_current": fps,
             "fps": fps
         })
 
@@ -60,6 +61,10 @@ class NasGameConfig:
     def fps(self):
         """帧率"""
         return self.shared_config["fps"]
+    @property
+    def fps_current(self):
+        """帧率"""
+        return self.shared_config["fps_current"]
 
     def start(self):
         """启动配置"""
